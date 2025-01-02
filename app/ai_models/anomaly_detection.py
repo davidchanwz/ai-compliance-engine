@@ -24,6 +24,20 @@ new_data = np.array([[
     5.0, 300.0, 200.0, 500000.0, 400000.0, 100000.0, 25.0, 35.0, 1.0e+76, 30.0
 ]])
 
+# Validate and clean the input data
+if np.any(np.isinf(new_data)):
+    print("Input contains infinity values. Replacing...")
+    new_data = np.where(np.isinf(new_data), np.finfo(np.float32).max, new_data)
+
+if np.any(np.isnan(new_data)):
+    print("Input contains NaN values. Replacing...")
+    new_data = np.nan_to_num(new_data, nan=0.0)
+
+threshold = 1e6  # Define a reasonable threshold
+if np.any(np.abs(new_data) > threshold):
+    print("Input contains excessively large values. Capping...")
+    new_data = np.clip(new_data, -threshold, threshold)
+
 # Convert the input to a DMatrix with feature names
 dnew_data = xgb.DMatrix(new_data, feature_names=feature_names)
 print(f"Input shape: {new_data.shape}")
@@ -31,3 +45,8 @@ print(f"Input shape: {new_data.shape}")
 # Make prediction
 prediction = loaded_model.predict(dnew_data)
 print(f"Prediction: {prediction}")
+
+# Convert probability to binary classification
+threshold = 0.5
+binary_prediction = int(prediction[0] > threshold)
+print(f"Binary Prediction: {binary_prediction}")
