@@ -1,6 +1,7 @@
 import joblib
 import numpy as np
 import xgboost as xgb
+from interact_with_blockchain import obtain_parameters
 
 # Load the saved model
 loaded_model = joblib.load('app/ai_models/fraud_model_v2.pkl')
@@ -18,11 +19,22 @@ feature_names = [
     ' ERC20_most_rec_token_type'
 ]
 
+#random transaction hash value from etherscan
+transaction_id = '0x197e7a5afe5a9dd6766814533507d64c1c47b8273e7f7e527a5df14638b2cbf8'
+
+params = obtain_parameters(transaction_id)
+
+#for the "Unnamed:0 column"
+params = [1.0] + params
+
+new_data = np.array([params])
+
 # Input data aligned with the model's features
-new_data = np.array([[
-    1.0, 800.0, 1200.0, 500000.0, 600.0, 75.0, 1.0, 50.0, 10.0,
-    5.0, 300.0, 200.0, 500000.0, 400000.0, 100000.0, 25.0, 35.0, 1.0e+76, 30.0
-]])
+# new_data = np.array([[
+#     1.0, 800.0, 1200.0, 500000.0, 600.0, 75.0, 1.0, 50.0, 10.0,
+#     5.0, 300.0, 200.0, 500000.0, 400000.0, 100000.0, 25.0, 35.0, 1.0e+76, 30.0
+# ]])
+
 
 # Validate and clean the input data
 if np.any(np.isinf(new_data)):
