@@ -26,6 +26,9 @@ def main():
         }
     ]
 
-    add_entry("Transactions", dummy_transactions)
+    # add_entry("Transactions", dummy_transactions)
+    # delete_entry("Transactions", {'status' : 'pending'})
+    delete_entry("Transactions", {'status' : 'success'})
+
 if __name__ == "__main__":
     main()

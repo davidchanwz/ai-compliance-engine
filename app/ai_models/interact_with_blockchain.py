@@ -35,41 +35,6 @@ def get_transaction_data(transaction_id):
 
     return None
 
-
-    """
-    Fetches the minimum and maximum ERC-20 token values sent from the specified address.
-    """
-    params = {
-        "module": "account",
-        "action": "tokentx",
-        "address": address,
-        "startblock": 0,
-        "endblock": 99999999,
-        "sort": "asc",
-        "apikey": API_KEY,
-    }
-    response = requests.get(BASE_URL, params=params)
-    data = response.json()
-    
-    try:
-        if "result" not in data:
-            raise ValueError("Unexpected response format. 'result' field not found.")
-
-        transactions = data["result"]
-        if not isinstance(transactions, list):
-            raise ValueError("Unexpected 'result' type. Expected a list.")
-
-        if not transactions:
-            return None, None  # No transactions found
-
-        values = [int(tx["value"]) / (10 ** int(tx["tokenDecimal"])) for tx in transactions]
-        return min(values), max(values)
-
-    except ValueError as ve:
-        return None, None
-    except Exception as e:
-        return None, None
-
 def get_wallet_metrics(sender_address):
     URL = f"https://api.etherscan.io/api?module=account&action=txlist&address={sender_address}&startblock=0&endblock=latest&sort=desc&apikey={API_KEY}"
     
@@ -120,7 +85,12 @@ def get_wallet_metrics(sender_address):
             'Received_tnx': received_tnx
         }
     else:
-        return {'error': data['message']}
+        return {
+            'Avg_min_between_sent_tnx': 0.0,
+            'Avg_min_between_received_tnx': 0.0,
+            'Time_Diff_between_first_and_last': 0.0,
+            'Sent_tnx': 0.0,
+            'Received_tnx': 0.0}
 
 def get_transaction_metrics(sender_address):
     txlist_url = f"https://api.etherscan.io/api?module=account&action=txlist&address={sender_address}&startblock=0&endblock=latest&sort=desc&apikey={API_KEY}"
@@ -186,7 +156,15 @@ def get_erc20_metrics(sender_address):
     data = response.json()
 
     if data['status'] != '1':
-        return {'error': data['message']}
+        return {
+            'ERC20_Total_Ether_Received': 0.0,
+            'ERC20_Total_Ether_Sent': 0.0,
+            'ERC20_Total_Ether_Sent_Contract': 0.0,
+            'ERC20_Uniq_Sent_Addr': 0.0,
+            'ERC20_Uniq_Rec_Token_Name': 0.0,
+            'ERC20_Most_Sent_Token_Type': 0.0,
+            'ERC20_Most_Rec_Token_Type': 0.0,
+        }
 
     erc20_transactions = data['result']
 
@@ -258,9 +236,3 @@ def obtain_parameters(transaction_id):
         all_values[-1] = hash_string_to_numeric(all_values[-1])
 
     return all_values
-
-
-
-   
-
-    

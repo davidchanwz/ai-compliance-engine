@@ -1,6 +1,8 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, Text, func, insert, delete
 from dotenv import load_dotenv
 import os
+import datetime
+
 
 load_dotenv()
 
@@ -18,25 +20,6 @@ engine = create_engine(DATABASE_URL)
 metadata = MetaData()
 
 
-def create_table(table_name: str, columns: list):
-    """
-    Creates a table in the database.
-    :param table_name: Name of the table
-    :param columns: List of columns (Column objects)
-    """
-    table = Table(table_name, metadata, *columns)
-    metadata.create_all(engine)
-    log_change('CREATE', table_name)
-    return table
-
-def delete_table(table_name: str):
-    """
-    Deletes a table from the database.
-    :param table_name: Name of the table to delete
-    """
-    table = Table(table_name, metadata, autoload_with=engine)
-    table.drop(engine)
-
 def add_entry(table_name: str, data: dict):
     """
     Adds an entry to a table.
@@ -47,7 +30,7 @@ def add_entry(table_name: str, data: dict):
     with engine.connect() as connection:
         connection.execute(insert(table).values(data))
         connection.commit() 
-    log_change('INSERT', table_name, data)
+    log_change(table_name, 'INSERT', data)
 
 def delete_entry(table_name: str, condition: dict):
     """
@@ -61,16 +44,7 @@ def delete_entry(table_name: str, condition: dict):
         where_clauses = [table.c[column] == value for column, value in condition.items()]
         connection.execute(delete(table).where(*where_clauses))
         connection.commit()
-    log_change('DELETE', table_name, condition)
-
-
-# logging_utils.py
-import datetime
-import logging
-
-# Configure logging
-logging.basicConfig(filename='database_changes.log', level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+    log_change(table_name, 'DELETE', condition)
 
 
 def log_change(table_name: str, action: str, data: dict):
