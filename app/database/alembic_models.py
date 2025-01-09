@@ -2,7 +2,8 @@ import uuid
 from sqlalchemy import JSON, Column, DateTime, String, Integer, func, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
-import datetime
+import uuid
+from datetime import datetime, timezone
 
 
 Base = declarative_base()
@@ -26,6 +27,9 @@ class DatabaseChanges(Base):
     data = Column(JSON, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+    def __repr__(self):
+        return f"<DatabaseChanges(id={self.id}, table_name={self.table_name}, action={self.action}, data={self.data}, created_at={self.created_at})>"
+
 class CheckedTransactions(Base):
     __tablename__ = 'Checked_transactions'
 
@@ -34,15 +38,11 @@ class CheckedTransactions(Base):
     anomaly_rating = Column(Float, nullable=False)
     anomaly = Column(Integer, nullable=False)
     checked_at = Column(DateTime, nullable=False, server_default=func.now())
-
-
-class Users(Base):
+ 
+class User(Base):
     __tablename__ = 'users'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    created_at = Column(DateTime, default=func.now())
-
-
-
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))  # Updated here

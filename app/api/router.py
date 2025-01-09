@@ -1,11 +1,11 @@
 from fastapi import APIRouter
-from app.api.endpoints import auth, compliance, kyc, health
+from app.api.endpoints.auth import router as auth_router
+from app.api.endpoints.protected import router as protected_router
+
 
 # Create the main API router
 api_router = APIRouter()
 
 # Include specific routers from each endpoint module
-api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-api_router.include_router(compliance.router, prefix="/compliance", tags=["Compliance"])
-api_router.include_router(kyc.router, prefix="/kyc", tags=["KYC"])
-api_router.include_router(health.router, prefix="/health", tags=["Health Check"])
+api_router.include_router(auth_router)
+api_router.include_router(protected_router)

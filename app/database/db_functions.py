@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, Text, func, insert, delete
+from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 import os
 import datetime
@@ -17,6 +18,7 @@ DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?
 
 # Database setup
 engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 metadata = MetaData()
 
 
