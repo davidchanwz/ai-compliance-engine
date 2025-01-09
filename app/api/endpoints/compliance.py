@@ -1,5 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
+from requests import Session
+from app.dependencies import get_db
+from app.services.compliance_service import feature_names, predict_anomaly 
 
 # Create the router for compliance
 router = APIRouter()
@@ -13,16 +16,16 @@ class TransactionCheckRequest(BaseModel):
 
 class TransactionCheckResponse(BaseModel):
     transaction_id: str
-    is_compliant: bool
-    risk_score: float
+    anomalous: bool
+    anomaly_score: float
 
 @router.post("/transaction-check", response_model=TransactionCheckResponse)
-async def transaction_check(request: TransactionCheckRequest):
-    # Dummy compliance logic
-    risk_score = 0.1 if request.amount < 1000 else 0.8
-    is_compliant = risk_score < 0.5
-    return {
-        "transaction_id": request.transaction_id,
-        "is_compliant": is_compliant,
-        "risk_score": risk_score,
-    }
+def transaction_check(request: TransactionCheckRequest, db: Session = Depends(get_db)):
+    # Call the prediction logic
+    result = predict_anomaly(request.transaction_id, db)
+    
+    return TransactionCheckResponse(
+        transaction_id=request.transaction_id,
+        anomalous=result["anomaly"],
+        anomaly_score=result["anomaly_rating"]
+    )
