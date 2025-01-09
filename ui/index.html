@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ACE</title>
+  <link rel="icon" type="image/jpg" href="ace.jpg" />
+  <style>
+    /* Reset & basic styling */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex; 
+      background: #f5f6fa;
+      color: #333;
+    }
+
+    /* Main container with two columns */
+    .container {
+      display: flex;
+      flex: 1;
+    }
+
+    /* Left panel: function selection and inputs */
+    .left-panel {
+      width: 40%;
+      max-width: 400px;
+      min-width: 400px; /* lock panel width */
+      background: #fff;
+      border-right: 1px solid #ddd;
+      padding: 20px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    }
+    .left-panel h2 {
+      margin-bottom: 15px;
+      font-size: 1.25rem;
+    }
+
+    .function-select {
+      margin-bottom: 20px;
+    }
+    .function-select label {
+      /* display: block; */
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    .function-select select,
+    .function-select input[type="text"],
+    .function-select input[type="email"],
+    .function-select input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
+    .function-select button {
+      padding: 10px 16px;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .function-select button:hover {
+      background: #0056b3;
+    }
+
+    /* Right panel: console/terminal style output */
+    .right-panel {
+      flex: 1; /* takes the remaining space */
+      padding: 20px;
+      display: flex;
+      flex-direction: column; 
+    }
+    .console-output {
+      flex: 1; /* so it can grow/shrink inside right panel */
+      background: #1e1e1e; /* typical dark terminal background */
+      color: #cfcfcf;      /* lighter text */
+      border-radius: 6px;
+      padding: 15px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.9rem;
+      overflow-y: auto;    /* scroll if content grows */
+      white-space: pre-wrap;
+    }
+    .console-output::before {
+      content: "Terminal:";
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #aaa;
+    }
+
+    /* Initially hide fields we don't want visible for all functions */
+    .hidden {
+      display: none;
+      color: white
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- LEFT COLUMN -->
+    <div class="left-panel">
+      <h2>ACE: AI-Compliance Engine</h2>
+      <div class="function-select">
+        <!-- Dropdown to choose either "login" or "transaction-check" -->
+        <label for="functionSelect">Select a function:</label>
+        <select id="functionSelect">
+          <option value="">-- Choose a function --</option>
+          <option value="login">Login</option>
+          <option value="transaction-check">Transaction Check</option>
+        </select>
+
+        <!-- Inputs for login -->
+        <label id="labelEmail" for="email" class="hidden">Email:</label>
+        <input id="email" type="email" class="hidden" placeholder="Email address..." />
+
+        <label id="labelPassword" for="password" class="hidden">Password:</label>
+        <input id="password" type="password" class="hidden" placeholder="Password..." />
+
+        <!-- Input for transaction check -->
+        <label id="labelTransaction" for="customInput" class="hidden">Transaction ID:</label>
+        <input id="customInput" type="text" class="hidden" placeholder="Enter transaction ID..." />
+
+        <button id="runFunction">Run</button>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-panel">
+      <div class="console-output" id="consoleOutput">
+        <!-- Terminal-like output will appear here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let token = null; // We'll store the JWT access token here after a successful login
+
+    const functionSelect   = document.getElementById("functionSelect");
+    const labelEmail       = document.getElementById("labelEmail");
+    const emailInput       = document.getElementById("email");
+    const labelPassword    = document.getElementById("labelPassword");
+    const passwordInput    = document.getElementById("password");
+    const labelTransaction = document.getElementById("labelTransaction");
+    const transactionInput = document.getElementById("customInput");
+    const runFunctionButton = document.getElementById("runFunction");
+    const consoleOutput    = document.getElementById("consoleOutput");
+
+    // Toggle visibility based on selected function
+    functionSelect.addEventListener("change", () => {
+      const chosenFunction = functionSelect.value;
+
+      if (chosenFunction === "login") {
+        // Show email & password
+        labelEmail.classList.remove("hidden");
+        emailInput.classList.remove("hidden");
+        labelPassword.classList.remove("hidden");
+        passwordInput.classList.remove("hidden");
+
+        // Hide transaction
+        labelTransaction.classList.add("hidden");
+        transactionInput.classList.add("hidden");
+        transactionInput.value = ""; // clear out
+      }
+      else if (chosenFunction === "transaction-check") {
+        // Show transaction ID
+        labelTransaction.classList.remove("hidden");
+        transactionInput.classList.remove("hidden");
+
+        // Hide email & password
+        labelEmail.classList.add("hidden");
+        emailInput.classList.add("hidden");
+        emailInput.value = ""; // clear out
+        labelPassword.classList.add("hidden");
+        passwordInput.classList.add("hidden");
+        passwordInput.value = "";
+      }
+      else {
+        // No function selected or unknown -> hide all
+        labelEmail.classList.add("hidden");
+        emailInput.classList.add("hidden");
+        labelPassword.classList.add("hidden");
+        passwordInput.classList.add("hidden");
+        labelTransaction.classList.add("hidden");
+        transactionInput.classList.add("hidden");
+      }
+    });
+
+    // Helper to append lines to the "terminal"
+    function appendToConsole(text) {
+      consoleOutput.textContent += `\n${text}`;
+      // scroll to bottom
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+    runFunctionButton.addEventListener("click", async () => {
+      const functionName = functionSelect.value;
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      const transactionId = transactionInput.value;
+
+      // Log which function is running
+      appendToConsole(`> Running function: ${functionName}`);
+
+      if (functionName === "login") {
+        // ---- Perform /login ----
+        try {
+          appendToConsole(`[INFO]: Logging in with ${email}, password: *****`);
+          const response = await fetch("http://localhost:8000/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await response.json();
+
+          if (response.ok) {
+            // Successfully logged in: store the token
+            token = data.access_token;
+            appendToConsole(`[SUCCESS]: Logged in. token = ${token}`);
+          } else {
+            appendToConsole(`[ERROR]: ${data.detail || "Login failed"}`);
+          }
+        } catch (err) {
+          appendToConsole(`[ERROR]: ${err.message}`);
+        }
+      } 
+      else if (functionName === "transaction-check") {
+        // ---- Perform /transaction-check ----
+        if (!token) {
+          appendToConsole("[ERROR]: No token. Please log in first.");
+          return;
+        }
+        if (!transactionId) {
+          appendToConsole("[ERROR]: Transaction ID cannot be empty.");
+          return;
+        }
+        
+        appendToConsole(`[INFO]: Checking transaction with transactionId = ${transactionId}`);
+        try {
+          const response = await fetch("http://localhost:8000/transaction-check", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ transaction_id: transactionId }),
+          });
+          const data = await response.json();
+          
+          if (response.ok) {
+            appendToConsole("[SUCCESS]: Transaction Check response:");
+            appendToConsole(JSON.stringify(data, null, 2));
+          } else {
+            appendToConsole(`[ERROR]: ${data.detail || "Transaction check failed"}`);
+          }
+        } catch (err) {
+          appendToConsole(`[ERROR]: ${err.message}`);
+        }
+      } 
+      else {
+        // No valid function selected
+        appendToConsole("[ERROR]: No valid function selected.");
+      }
+    });
+  </script>
+</body>
+</html>

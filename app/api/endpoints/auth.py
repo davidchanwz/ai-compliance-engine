@@ -29,18 +29,6 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-@router.post("/register")
-def register(request: RegisterRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == request.email).first()
-    if user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    hashed_password = get_password_hash(request.password)
-    new_user = User(email=request.email, hashed_password=hashed_password)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return {"message": "User registered successfully"}
-
 @router.post("/login")
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     logger.info(f"Login attempt for email: {request.email}")

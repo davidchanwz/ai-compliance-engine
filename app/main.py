@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from app.api.router import api_router
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 
 # Initialize the FastAPI app
 app = FastAPI(
@@ -10,6 +12,11 @@ app = FastAPI(
 
 # Include the API router
 app.include_router(api_router)
+app.mount("/ui", StaticFiles(directory="ui"), name="ui")
+@app.get("/")
+
+async def redirect_to_ui():
+    return RedirectResponse(url="/ui/index.html")
 
 # Run the app if executed directly
 if __name__ == "__main__":

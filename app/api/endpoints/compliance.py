@@ -12,9 +12,6 @@ router = APIRouter()
 # Request and Response Models
 class TransactionCheckRequest(BaseModel):
     transaction_id: str
-    amount: float
-    sender_account: str
-    receiver_account: str
 
 class TransactionCheckResponse(BaseModel):
     transaction_id: str
