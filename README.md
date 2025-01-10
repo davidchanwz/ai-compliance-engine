@@ -45,9 +45,6 @@ Follow these steps to test the ACE API using the live demo:
 ├── 📁 app
 |   ├── __init__.py
 |   ├── ai_models
-|   │   ├── __pycache__
-|   │   │   ├── interact_with_blockchain.cpython-311.pyc
-|   │   │   └── interaction.cpython-311.pyc
 |   │   ├── anomaly_detection.py
 |   │   ├── fraud_model_v2.pkl
 |   │   ├── interact_with_blockchain.py
