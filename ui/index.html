@@ -246,7 +246,7 @@
         // ---- Perform /login ----
         try {
           appendToConsole(`[INFO]: Logging in with ${email}, password: *****`);
-          const response = await fetch("http://localhost:8000/login", {
+          const response = await fetch("https://ai-compliance-engine.onrender.com/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
@@ -277,7 +277,7 @@
         
         appendToConsole(`[INFO]: Checking transaction with transactionId = ${transactionId}`);
         try {
-          const response = await fetch("http://localhost:8000/transaction-check", {
+          const response = await fetch("https://ai-compliance-engine.onrender.com/transaction-check", {
             method: "POST",
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -307,7 +307,7 @@
         
         appendToConsole(`[INFO]: Getting audit trail`);
         try {
-          const response = await fetch("http://localhost:8000/audit-trail", {
+          const response = await fetch("https://ai-compliance-engine.onrender.com/audit-trail", {
             method: "GET",
             headers: {
             "accept": "application/json",
