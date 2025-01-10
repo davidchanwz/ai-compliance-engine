@@ -119,6 +119,8 @@
           <option value="">-- Choose a function --</option>
           <option value="login">Login</option>
           <option value="transaction-check">Transaction Check</option>
+          <option value="audit-trail">Audit Trail</option>
+
         </select>
 
         <!-- Inputs for login -->
@@ -131,6 +133,10 @@
         <!-- Input for transaction check -->
         <label id="labelTransaction" for="customInput" class="hidden">Transaction ID:</label>
         <input id="customInput" type="text" class="hidden" placeholder="Enter transaction ID..." />
+
+        <!-- Input for audit trail -->
+        <label id="labelAudit" for="customInput" class="hidden">Get Audit Trail:</label>
+
 
         <button id="runFunction">Run</button>
       </div>
@@ -154,6 +160,7 @@
     const passwordInput    = document.getElementById("password");
     const labelTransaction = document.getElementById("labelTransaction");
     const transactionInput = document.getElementById("customInput");
+    const labelAudit = document.getElementById("labelAudit");
     const runFunctionButton = document.getElementById("runFunction");
     const consoleOutput    = document.getElementById("consoleOutput");
 
@@ -172,6 +179,8 @@
         labelTransaction.classList.add("hidden");
         transactionInput.classList.add("hidden");
         transactionInput.value = ""; // clear out
+
+        labelAudit.classList.add("hidden");
       }
       else if (chosenFunction === "transaction-check") {
         // Show transaction ID
@@ -185,6 +194,26 @@
         labelPassword.classList.add("hidden");
         passwordInput.classList.add("hidden");
         passwordInput.value = "";
+
+        labelAudit.classList.add("hidden");
+
+      }
+
+      else if (chosenFunction === "audit-trail") {
+        labelAudit.classList.remove("hidden");
+
+        // Hide email & password
+        labelEmail.classList.add("hidden");
+        emailInput.classList.add("hidden");
+        emailInput.value = ""; // clear out
+        labelPassword.classList.add("hidden");
+        passwordInput.classList.add("hidden");
+        passwordInput.value = "";
+
+        // Hide transaction
+        labelTransaction.classList.add("hidden");
+        transactionInput.classList.add("hidden");
+        transactionInput.value = ""; // clear out
       }
       else {
         // No function selected or unknown -> hide all
@@ -263,6 +292,35 @@
             appendToConsole(JSON.stringify(data, null, 2));
           } else {
             appendToConsole(`[ERROR]: ${data.detail || "Transaction check failed"}`);
+          }
+        } catch (err) {
+          appendToConsole(`[ERROR]: ${err.message}`);
+        }
+      } 
+
+      else if (functionName === "audit-trail") {
+        // ---- Perform /transaction-check ----
+        if (!token) {
+          appendToConsole("[ERROR]: No token. Please log in first.");
+          return;
+        }
+        
+        appendToConsole(`[INFO]: Getting audit trail`);
+        try {
+          const response = await fetch("http://localhost:8000/audit-trail", {
+            method: "GET",
+            headers: {
+            "accept": "application/json",
+            "Authorization": `Bearer ${token}`
+            },
+          });
+          const data = await response.json();
+          
+          if (response.ok) {
+            appendToConsole("[SUCCESS]: Audit Trail response:");
+            appendToConsole(JSON.stringify(data, null, 2));
+          } else {
+            appendToConsole(`[ERROR]: ${data.detail || "Audit trail failed"}`);
           }
         } catch (err) {
           appendToConsole(`[ERROR]: ${err.message}`);

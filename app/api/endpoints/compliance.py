@@ -22,9 +22,9 @@ class TransactionCheckResponse(BaseModel):
     anomaly_score: float
 
 class AuditTrailSchema(BaseModel):
-    id: UUID
+    id: str
     timestamp: datetime
-    user_id: UUID
+    user_id: str
     action: str
     transaction_id: str | None
     details: str | None
@@ -40,7 +40,20 @@ async def get_audit_trail(
 ):
     # Fetch logs, optionally filter by user or action
     logs = db.query(AuditTrail).filter_by(user_id=current_user.id).all()
-    return logs
+        # Convert UUID fields to strings
+    transformed_logs = [
+        {
+            "id": str(log.id),
+            "timestamp": log.timestamp,
+            "user_id": str(log.user_id),
+            "action": log.action,
+            "transaction_id": log.transaction_id,
+            "details": log.details,
+        }
+        for log in logs
+    ]
+
+    return transformed_logs
 
 @router.post("/transaction-check", response_model=TransactionCheckResponse)
 async def transaction_check(request: TransactionCheckRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user),  # Protect the endpoint
