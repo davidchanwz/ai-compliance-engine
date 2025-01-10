@@ -1,5 +1,29 @@
 # ai-compliance-engine
 
+## Testing the ACE API
+
+Follow these steps to test the ACE API using the live demo:
+
+1. **Access the Demo Interface**  
+   Go to https://ai-compliance-engine.onrender.com/ui/index.html
+
+2. **Login**  
+   - Select `Login` from the **Select a function** dropdown menu.  
+   - Input the following credentials:  
+     - **Email:** `test-87239689-46f0-4605-94de-1c6235d745eb@example.com`  
+     - **Password:** `password`  
+   - Click `Run`.
+
+3. **Transaction Check**  
+   - Select `Transaction Check` from the **Select a function** dropdown menu.  
+   - Obtain a `Transaction_Hash` from https://etherscan.io/txs 
+   - Input the `Transaction_Hash` in the provided field.  
+   - Click `Run`.
+
+4. **Audit Trail**  
+   - Select `Audit Trail` from the **Select a function** dropdown menu.  
+   - Click `Run` to view the audit logs.
+
 ## Documentations
 [Detailed documentation](https://docs.google.com/document/d/1h5OhWD8RSjyE05rEagEvz6LnUuQ4sgvLDffz2l2PrI0/edit?usp=sharing)
 
