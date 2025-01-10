@@ -5,55 +5,109 @@
 ```
 📦 ai-compliance-engine
 ├── 📁 app
-│   ├── 📁 api
-│   │   ├── 📁 endpoints
-│   │   │   ├── 📄 auth.py           # Endpoints for user authentication (login, register)
-│   │   │   ├── 📄 compliance.py     # Endpoints for compliance checks (transaction checks, audit logs)
-│   │   │   ├── 📄 kyc.py            # Endpoints for KYC and AML processes
-│   │   │   └── 📄 health.py         # Health check endpoint
-│   │   └── 📄 router.py             # Main router to include all endpoints
-│   │
-│   ├── 📁 core
-│   │   ├── 📄 config.py             # Global configurations (environment variables, settings)
-│   │   ├── 📄 security.py           # JWT token logic, password hashing
-│   │   └── 📄 logging_config.py     # Logger setup for structured logs
-│   │
-│   ├── 📁 services
-│   │   ├── 📄 compliance_service.py # Business logic for compliance checks, risk scoring
-│   │   ├── 📄 kyc_service.py        # KYC processing (AI model calls, validation)
-│   │   ├── 📄 audit_service.py      # Audit logging service for recording compliance events
-│   │   └── 📄 auth_service.py       # User authentication, registration, and JWT handling
-│   │
-│   ├── 📁 ai_models
-│   │   ├── 📄 anomaly_detection.py  # Anomaly detection model (Isolation Forest, etc.)
-│   │   ├── 📄 risk_scoring.py       # Risk scoring model (Logistic Regression, etc.)
-│   │   ├── 📄 kyc_verification.py   # KYC biometric verification (FaceNet, etc.)
-│   │   └── 📄 model_loader.py       # Model loader for all AI/ML models
-│   │
-│   ├── 📁 tests
-│   │   ├── 📁 unit
-│   │   │   ├── 📄 test_auth.py      # Unit tests for authentication logic
-│   │   │   ├── 📄 test_compliance.py # Unit tests for compliance logic
-│   │   │   └── 📄 test_kyc.py       # Unit tests for KYC logic
-│   │   ├── 📁 integration
-│   │   │   ├── 📄 test_endpoints.py # End-to-end tests for API endpoints
-│   │   │   └── 📄 test_database.py  # Integration tests for the database connection
-│   │   └── 📄 conftest.py           # Pytest fixtures (database, test clients, mock models)
-│   │
-│   ├── 📄 main.py                   # Main entry point for FastAPI app
-│   └── 📄 dependencies.py           # Shared dependencies for FastAPI routes (e.g., JWT tokens, DB session)
+|   ├── __init__.py
+|   ├── __pycache__
+|   │   ├── __init__.cpython-311.pyc
+|   │   ├── dependencies.cpython-311.pyc
+|   │   └── main.cpython-311.pyc
+|   ├── ai_models
+|   │   ├── __pycache__
+|   │   │   ├── interact_with_blockchain.cpython-311.pyc
+|   │   │   └── interaction.cpython-311.pyc
+|   │   ├── anomaly_detection.py
+|   │   ├── fraud_model_v2.pkl
+|   │   ├── interact_with_blockchain.py
+|   │   ├── kyc_verification.py
+|   │   ├── model_loader.py
+|   │   └── risk_scoring.py
+|   ├── api
+|   │   ├── __pycache__
+|   │   │   └── router.cpython-311.pyc
+|   │   ├── endpoints
+|   │   │   ├── __pycache__
+|   │   │   │   ├── auth.cpython-311.pyc
+|   │   │   │   ├── compliance.cpython-311.pyc
+|   │   │   │   └── protected.cpython-311.pyc
+|   │   │   ├── auth.py
+|   │   │   ├── compliance.py
+|   │   │   ├── health.py
+|   │   │   ├── kyc.py
+|   │   │   └── protected.py
+|   │   └── router.py
+|   ├── core
+|   │   ├── __pycache__
+|   │   │   ├── config.cpython-311.pyc
+|   │   │   ├── jwt.cpython-311.pyc
+|   │   │   └── security.cpython-311.pyc
+|   │   ├── config.py
+|   │   ├── jwt.py
+|   │   ├── logging_config.py
+|   │   └── security.py
+|   ├── database
+|   │   ├── __init__.py
+|   │   ├── __pycache__
+|   │   │   ├── __init__.cpython-311.pyc
+|   │   │   ├── alembic_models.cpython-311.pyc
+|   │   │   └── db_functions.cpython-311.pyc
+|   │   ├── alembic_models.py
+|   │   ├── db_functions.py
+|   │   └── main.py
+|   ├── dependencies.py
+|   ├── main.py
+|   ├── services
+|   │   ├── __init__.py
+|   │   ├── __pycache__
+|   │   │   ├── __init__.cpython-311.pyc
+|   │   │   ├── compliance_service.cpython-311.pyc
+|   │   │   └── user_service.cpython-311.pyc
+|   │   ├── audit_service.py
+|   │   ├── compliance_service.py
+|   │   ├── kyc_service.py
+|   │   └── user_service.py
+|   └── tests
+|       ├── conftest.py
+|       ├── integration
+|       │   ├── test_auth.py
+|       │   ├── test_database.py
+|       │   └── test_endpoints.py
+|       └── unit
+|           ├── test_compliance.py
+|           ├── test_jwt.py
+|           └── test_kyc.py
 │
-├── 📁 scripts                       # Utility scripts for local development, model training, etc.
-│   └── 📄 anomaly_detection.ipynb
-│   └── 📄 data_preprocessing.ipynb
-│
-├── 📁 models                        # Trained AI/ML models directory (for loading models)
-│   └── (empty)
-│
+├── 📁 scripts                       
+|    ├── anomaly_detection.ipynb
+|    ├── data_preprocessing.ipynb
+|    ├── fraud_model_v1.ipynb
+|    ├── fraud_model_v2.ipynb
+|    ├── generate_password.py
+|    ├── generate_test_data.py
+|    └── test_verify_pwd.py
+|
+├── 📁 alembic                        
+|   ├── env.py
+|   ├── script.py.mako
+|   └── versions
+|       ├── 20b72c84164d_create_users_table.py
+|       ├── 5bae64d09a9c_add_audit_trail_table.py
+|       ├── 9c7182748d5c_add_checked_transactions_table.py
+|       ├── 9e3777d73267_change_anomaly_rating_to_float.py
+|   └── __pycache__
+|       ├── 20b72c84164d_create_users_table.cpython-311.pyc
+|       ├── 5bae64d09a9c_add_audit_trail_table.cpython-311.pyc
+|       ├── 9c7182748d5c_add_checked_transactions_table.cpython-311.pyc
+|       ├── 9e3777d73267_change_anomaly_rating_to_float.cpython-311.pyc
+|       ├── b9c39b7c5a2b_setting_up_tables.cpython-311.pyc
+|       └── b9c39b7c5a2b_setting_up_tables.py
+├── 📁 UI
+|    ├── ace.jpg
+|    ├── index.html
+|    └── styles.css
+|
 ├── 📄 .env                          # Default environment variables
 ├── 📄 .gitignore                    # Git ignore file
 ├── 📄 requirements.txt              # Python dependencies
-├── 📄 Dockerfile                 # Dockerfile for building the app image
+├── 📄 Dockerfile                    # Dockerfile for building the app image
 ├── 📄 docker-compose.yml            # Docker Compose for multi-container setup
 ├── 📄 README.md                     # Project documentation
 └── 📄 pyproject.toml                # Python project configuration
