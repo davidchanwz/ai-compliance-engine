@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import JSON, Column, DateTime, String, Integer, func, Float
+from sqlalchemy import JSON, Column, DateTime, String, Integer, Text, func, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -45,4 +45,14 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))  # Updated here
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))  
+
+class AuditTrail(Base):
+    __tablename__ = "audit_trail"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    timestamp = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    user_id = Column(UUID(as_uuid=True), nullable=True) 
+    action = Column(String(255), nullable=False)
+    transaction_id = Column(String(255), nullable=True)
+    details = Column(Text, nullable=True)
