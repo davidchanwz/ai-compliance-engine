@@ -1,5 +1,14 @@
 # ai-compliance-engine
 
+## Documentations
+[Detailed documentation](https://docs.google.com/document/d/1h5OhWD8RSjyE05rEagEvz6LnUuQ4sgvLDffz2l2PrI0/edit?usp=sharing)
+[Youtube Video](https://youtu.be/onFCQf1fKVQ)
+
+## Members
+[Lionel See](https://github.com/lionsee77)
+[David Chan](https://github.com/davidchanwz)
+
+
 ## Directory Structure
 
 ```
